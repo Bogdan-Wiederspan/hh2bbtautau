@@ -220,6 +220,11 @@ def add_config(
     cfg.x.get_dataset_lfns = None
     cfg.x.get_dataset_lfns_sandbox = None
 
+    if year in (2022, 2023):
+        cfg.x.run = 3
+    elif year in (2016, 2017, 2018):
+        cfg.x.run = 2
+
     # lumi values in inverse pb
     # https://twiki.cern.ch/twiki/bin/view/CMS/LumiRecommendationsRun2?rev=2#Combination_and_correlations
     if year == 2016:
@@ -571,6 +576,13 @@ def add_config(
 
     # external files
     json_mirror = "/afs/cern.ch/work/m/mrieger/public/mirrors/jsonpog-integration-9ea86c4c"
+    cfg.x.cpn_tag = f"{year}{corr_postfix}"
+    # create corr tag for pu names
+    if cfg.x.run == 2:
+        corr_tag = f"{cfg.x.cpn_tag}_UL"
+    elif cfg.x.run == 3:
+        corr_tag = f"{year}_Summer22{jerc_postfix}"
+
     cfg.x.external_files = DotDict.wrap({
         # jet energy correction
         "jet_jerc": (f"{json_mirror}/POG/JME/{year}{corr_postfix}_UL/jet_jerc.json.gz", "v1"),
@@ -592,6 +604,10 @@ def add_config(
 
         # hh-btag repository (lightweight) with TF saved model directories
         "hh_btag_repo": ("https://github.com/hh-italian-group/HHbtag/archive/1dc426053418e1cab2aec021802faf31ddf3c5cd.tar.gz", "v1"),  # noqa
+
+        "pu_sf": (f"{json_mirror}/POG/LUM/{corr_tag}/puWeights.json.gz", "v1"),     # noqa
+
+
     })
 
     # external files with more complex year dependence

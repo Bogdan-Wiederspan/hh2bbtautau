@@ -169,11 +169,11 @@ def add_config(
     cfg.x.default_calibrator = "default"
     cfg.x.default_selector = "default"
     cfg.x.default_producer = "default"
+    cfg.x.default_weight_producer = "all_weights"
     cfg.x.default_ml_model = None
     cfg.x.default_inference_model = "test_no_shifts"
     cfg.x.default_categories = ("incl",)
     cfg.x.default_variables = ("n_jet", "n_btag")
-
     # process groups for conveniently looping over certain processs
     # (used in wrapper_factory and during plotting)
     cfg.x.process_groups = {}
@@ -370,7 +370,7 @@ def add_config(
     ]
 
     # name of the btag_sf correction set and jec uncertainties to propagate through
-    cfg.x.btag_sf = ("deepJet_shape", cfg.x.btag_sf_jec_sources)
+    cfg.x.btag_sf = ("deepJet_shape", cfg.x.btag_sf_jec_sources, "btagDeepFlavB")
 
     # name of the deep tau tagger
     # (used in the tec calibrator)
@@ -556,6 +556,8 @@ def add_config(
     # external files
     json_mirror = "/afs/cern.ch/work/m/mrieger/public/mirrors/jsonpog-integration-9ea86c4c"
     cfg.x.external_files = DotDict.wrap({
+        # pu_sf files
+        "pu_sf": (f"{json_mirror}/POG/LUM/{year}{corr_postfix}_UL/puWeights.json.gz", "v1"),
         # jet energy correction
         "jet_jerc": (f"{json_mirror}/POG/JME/{year}{corr_postfix}_UL/jet_jerc.json.gz", "v1"),
 
@@ -730,6 +732,9 @@ def add_config(
     if year == 2017:
         from hbt.config.triggers import add_triggers_2017
         add_triggers_2017(cfg)
+    elif year == 2018:
+        from hbt.config.triggers import add_triggers_2018
+        add_triggers_2018(cfg)
     else:
         raise NotImplementedError(f"triggers not implemented for {year}")
 
